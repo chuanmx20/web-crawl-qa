@@ -4,7 +4,9 @@ from crawler import crawl
 from urllib.parse import urlparse
 from context import answer_question
 import pandas as pd
+import openai
 
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
@@ -21,3 +23,5 @@ def home():
     answer = answer_question(df, question)
     
     return flask.jsonify(answer)
+
+app.run()
