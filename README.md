@@ -15,11 +15,11 @@ python app.py
 ```mermaid
 graph TD;
 
-a(web_qa request)
-b{already crawled}
-c(ask ChatGPT)
-d(crawl and save embedding)
-e(return Answer)
+a(web_qa Request)
+b{Site Already Crawled}
+c(Ask ChatGPT)
+d(Crawl and Save Embedding)
+e(Return Answer)
 a -->b
 b --yes--> c
 b --no--> d
