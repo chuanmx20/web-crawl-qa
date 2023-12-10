@@ -12,10 +12,15 @@ from urllib.parse import urlparse
 import os
 import pandas as pd
 import tiktoken
-import openai
+from openai import OpenAI
+
+client = OpenAI()
+from openai import OpenAI
 import numpy as np
+from openai.lib.
 from openai.embeddings_utils import distances_from_embeddings, cosine_similarity
 from ast import literal_eval
+
 
 # Regex pattern to match a URL
 HTTP_URL_PATTERN = r'^http[s]{0,1}://.+$'
@@ -24,8 +29,8 @@ HTTP_URL_PATTERN = r'^http[s]{0,1}://.+$'
 # openai.api_key = '<Your API Key>'
 
 # Define root domain to crawl
-domain = "openai.com"
-full_url = "https://openai.com/"
+domain = "mlb.com"
+full_url = "https://mlb.com/"
 
 # Create a class to parse the HTML and get the hyperlinks
 class HyperlinkParser(HTMLParser):
@@ -299,7 +304,7 @@ df.n_tokens.hist()
 # Note that you may run into rate limit issues depending on how many files you try to embed
 # Please check out our rate limit guide to learn more on how to handle this: https://platform.openai.com/docs/guides/rate-limits
 
-df['embeddings'] = df.text.apply(lambda x: openai.Embedding.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
+df['embeddings'] = df.text.apply(lambda x: client.embeddings.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
 df.to_csv('processed/embeddings.csv')
 df.head()
 
@@ -324,7 +329,7 @@ def create_context(
     """
 
     # Get the embeddings for the question
-    q_embeddings = openai.Embedding.create(input=question, engine='text-embedding-ada-002')['data'][0]['embedding']
+    q_embeddings = client.embeddings.create(input=question, engine='text-embedding-ada-002')['data'][0]['embedding']
 
     # Get the distances from the embeddings
     df['distances'] = distances_from_embeddings(q_embeddings, df['embeddings'].values, distance_metric='cosine')
@@ -351,12 +356,12 @@ def create_context(
 
 def answer_question(
     df,
-    model="text-davinci-003",
+    model="gpt-3.5-turbo",
     question="Am I allowed to publish model outputs to Twitter, without a human review?",
     max_len=1800,
     size="ada",
     debug=False,
-    max_tokens=150,
+    max_tokens=2048,
     stop_sequence=None
 ):
     """
@@ -375,7 +380,18 @@ def answer_question(
 
     try:
         # Create a completions using the questin and context
-        response = openai.Completion.create(
+        # response = openai.Completion.create(
+        #     prompt=f"Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}\n\n---\n\nQuestion: {question}\nAnswer:",
+        #     temperature=0,
+        #     max_tokens=max_tokens,
+        #     top_p=1,
+        #     frequency_penalty=0,
+        #     presence_penalty=0,
+        #     stop=stop_sequence,
+        #     model=model,
+        # )
+        client = OpenAI()
+        response = client.chat.completions.create(
             prompt=f"Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}\n\n---\n\nQuestion: {question}\nAnswer:",
             temperature=0,
             max_tokens=max_tokens,
@@ -385,6 +401,8 @@ def answer_question(
             stop=stop_sequence,
             model=model,
         )
+        
+        
         return response["choices"][0]["text"].strip()
     except Exception as e:
         print(e)

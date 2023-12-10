@@ -4,3 +4,4 @@
 venv/
 text/
 processed/
+.DS_Store

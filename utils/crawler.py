@@ -8,7 +8,10 @@ from urllib.parse import urlparse
 import os
 import pandas as pd
 import tiktoken
-import openai
+from openai import OpenAI
+
+client = OpenAI()
+from utils.embeddings_utils import distances_from_embeddings
 import numpy as np
 from ast import literal_eval
 
@@ -107,8 +110,7 @@ def extract_text(domain):
     df['text'] = df.fname + ". " + remove_newlines(df.text)
     return df
 
-def tokenize(domain, tokenizer):
-    df = pd.read_csv(f'processed/{domain}.csv', index_col=0)
+def tokenize(df, tokenizer):
     df.columns = ['title', 'text']
 
     # Tokenize the text and save the number of tokens to a new column
@@ -167,7 +169,7 @@ def shorten(df, tokenizer, max_tokens = 2048):
 
         # If the number of tokens is greater than the max number of tokens, split the text into chunks
         if row[1]['n_tokens'] > max_tokens:
-            shortened += split_into_many(row[1]['text'])
+            shortened += split_into_many(row[1]['text'], tokenizer, max_tokens = max_tokens)
         
         # Otherwise, add the text to the list of shortened texts
         else:
@@ -176,12 +178,10 @@ def shorten(df, tokenizer, max_tokens = 2048):
     df['n_tokens'] = df.text.apply(lambda x: len(tokenizer.encode(x)))
     return df
 
-def embed(df, domain):
-    df['embeddings'] = df.text.apply(lambda x: openai.Embedding.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
+def embed(df):
+    df['embeddings'] = df.text.apply(lambda x: client.embeddings.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
     df['embeddings'] = df['embeddings'].apply(literal_eval).apply(np.array)
-    df.to_csv(f'processed/{domain}_embed.csv')
-
-
+    return df
 
 
 def crawl(url):
@@ -211,9 +211,12 @@ def crawl(url):
         # Get the next URL from the queue
         url = queue.pop()
         print(url) # for debugging and to see the progress
-
+        fname = url[8:].replace("/", "_") + ".txt"
+        # if fname too long, omit the last part of the url
+        if len(fname) > 10:
+            fname = fname[-10:]
         # Save text from the url to a <url>.txt file
-        with open('text/'+local_domain+'/'+url[8:].replace("/", "_") + ".txt", "w") as f:
+        with open('text/'+local_domain+'/'+fname, "w") as f:
 
             # Get the text from the URL using BeautifulSoup
             soup = BeautifulSoup(requests.get(url).text, "html.parser")
@@ -239,4 +242,5 @@ def crawl(url):
     df = extract_text(local_domain)
     df = tokenize(df, tokenizer)
     df = shorten(df, tokenizer, max_tokens = 2048)
-    embed(df, local_domain)
+    df = embed(df)
+    df.to_csv(f'processed/{local_domain}_embed.csv')

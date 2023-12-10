@@ -1,12 +1,11 @@
 import flask
 import os
-from crawler import crawl
+from utils.crawler import crawl
 from urllib.parse import urlparse
-from context import answer_question
+from utils.context import answer_question
 import pandas as pd
 import openai
 
-openai.api_key = os.environ.get("OPENAI_API_KEY")
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
@@ -15,7 +14,7 @@ def home():
     url = flask.request.args.get('url')
     question = flask.request.args.get('question')
     domain =  urlparse(url).netloc
-    
+    print(domain)
     if not os.path.exists(f'processed/{domain}_embed.csv'):
         crawl(url)
         
