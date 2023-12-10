@@ -9,7 +9,6 @@ import os
 import pandas as pd
 import tiktoken
 from openai import OpenAI
-
 client = OpenAI()
 from utils.embeddings_utils import distances_from_embeddings
 import numpy as np
@@ -89,7 +88,7 @@ def get_domain_hyperlinks(local_domain, url):
 
 def remove_newlines(serie):
     serie = serie.str.replace('\n', ' ')
-    serie = serie.str.replace('\\n', ' ')
+    # serie = serie.str.replace('\\n', ' ')
     serie = serie.str.replace('  ', ' ')
     serie = serie.str.replace('  ', ' ')
     return serie
@@ -179,7 +178,7 @@ def shorten(df, tokenizer, max_tokens = 2048):
     return df
 
 def embed(df):
-    df['embeddings'] = df.text.apply(lambda x: client.embeddings.create(input=x, engine='text-embedding-ada-002')['data'][0]['embedding'])
+    df['embeddings'] = df.text.apply(lambda x: client.embeddings.create(input=x, model='text-embedding-ada-002')['data'][0]['embedding'])
     df['embeddings'] = df['embeddings'].apply(literal_eval).apply(np.array)
     return df
 

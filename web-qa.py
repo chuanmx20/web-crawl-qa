@@ -17,8 +17,8 @@ from openai import OpenAI
 client = OpenAI()
 from openai import OpenAI
 import numpy as np
-from openai.lib.
-from openai.embeddings_utils import distances_from_embeddings, cosine_similarity
+
+from utils.embeddings_utils import distances_from_embeddings, cosine_similarity
 from ast import literal_eval
 
 
