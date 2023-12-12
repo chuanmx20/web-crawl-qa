@@ -55,7 +55,10 @@ def answer_question(
         print("\n\n")
 
     try:
-        messages = [{"role":"system","content":"You are a helpful assistant"},{"role":"user","content":f"Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}\n\n---\n\nQuestion: {question}\n"}]
+        messages = [
+            {"role":"system","content":"You are a helpful assistant"},
+            {"role":"user","content":f"Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}\n\n---\n\nQuestion: {question}\n"}
+        ]
         # print(messages)
         # Create a completions using the question and context
         response = client.chat.completions.create(
@@ -64,7 +67,7 @@ def answer_question(
             max_tokens = max_tokens,
             stream=False
         )
-        return response.choices[0].message.content.stripe()
+        return response.choices[0].message.content
     except Exception as e:
         print(e)
         return f"error: {e}"

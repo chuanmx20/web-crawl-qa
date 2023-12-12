@@ -23,7 +23,7 @@ def home():
         crawl(url)
         
     df = pd.read_pickle(f'processed/{domain}_embed.pkl')
-    answer = answer_question(df, question)
+    answer = answer_question(df, model="gpt-3.5-turbo-1106", question=question)
     
     return flask.jsonify(answer)
 
