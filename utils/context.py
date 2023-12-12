@@ -1,19 +1,16 @@
 from openai import OpenAI
 
 client = OpenAI() 
-from utils.embeddings_utils import distances_from_embeddings, cosine_similarity
-def create_context(
-    question, df, max_len=1800, size="ada"
-):
+from utils.embeddings_utils import distances_from_embeddings
+def create_context(question, df, max_len=1800):
     """
     Create a context for a question by finding the most similar context from the dataframe
     """
 
     # Get the embeddings for the question
-    q_embeddings = client.embeddings.create(input=question, engine='text-embedding-ada-002')['data'][0]['embedding']
-
+    q_embeddings = client.embeddings.create(input=question, model='text-embedding-ada-002').data[0].embedding
     # Get the distances from the embeddings
-    df['distances'] = distances_from_embeddings(q_embeddings, df['embeddings'].values, distance_metric='cosine')
+    df['distances'] = distances_from_embeddings(q_embeddings, df['embeddings'], distance_metric='cosine')
 
 
     returns = []
@@ -37,10 +34,9 @@ def create_context(
 
 def answer_question(
     df,
-    model="gpt-3.5-turbo",
+    model="gpt-4",
     question="",
     max_len=1800,
-    size="ada",
     debug=False,
     max_tokens=512,
     stop_sequence=None
@@ -52,7 +48,6 @@ def answer_question(
         question,
         df,
         max_len=max_len,
-        size=size,
     )
     # If debug, print the raw model response
     if debug:
@@ -60,16 +55,16 @@ def answer_question(
         print("\n\n")
 
     try:
+        messages = [{"role":"system","content":"You are a helpful assistant"},{"role":"user","content":f"Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}\n\n---\n\nQuestion: {question}\n"}]
+        # print(messages)
         # Create a completions using the question and context
-        response = client.completions.create(prompt=f"Answer the question based on the context below, and if the question can't be answered based on the context, say \"I don't know\"\n\nContext: {context}\n\n---\n\nQuestion: {question}\nAnswer:",
-        temperature=0,
-        max_tokens=max_tokens,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0,
-        stop=stop_sequence,
-        model=model)
-        return response["choices"][0]["text"].strip()
+        response = client.chat.completions.create(
+            messages=messages,
+            model = model,
+            max_tokens = max_tokens,
+            stream=False
+        )
+        return response.choices[0].message.content.stripe()
     except Exception as e:
         print(e)
-        return ""
+        return f"error: {e}"

@@ -178,8 +178,8 @@ def shorten(df, tokenizer, max_tokens = 2048):
     return df
 
 def embed(df):
-    df['embeddings'] = df.text.apply(lambda x: client.embeddings.create(input=x, model="text-embedding-ada-002"))
-    df['embeddings'] = df['embeddings'].apply(literal_eval).apply(np.array)
+    df['embeddings'] = df.text.apply(lambda x: client.embeddings.create(input=x, model="text-embedding-ada-002").data[0].embedding)
+    df['embeddings'] = df['embeddings'].apply(np.array)
     return df
 
 
@@ -242,4 +242,4 @@ def crawl(url):
     df = tokenize(df, tokenizer)
     df = shorten(df, tokenizer, max_tokens = 2048)
     df = embed(df)
-    df.to_csv(f'processed/{local_domain}_embed.csv')
+    df.to_pickle(f'processed/{local_domain}_embed.pkl')
