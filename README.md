@@ -27,3 +27,10 @@ d --> c
 c --> e
 
 ```
+
+## API Reference
+
+| PATH        | PARAMS                                                                                                             | HEADER | BODY | NOTE |
+| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------ | ---- | ---- |
+| /web_qa     | question(str): question to ask about the site<br />url(str): url of the site to ask, https://baidu.com for example | --     | --   | --   |
+| /suggestion |                                                                                                                    |        |      |      |

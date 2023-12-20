@@ -57,7 +57,7 @@ def answer_question(
     try:
         messages = [
             {"role":"system","content":"You are a helpful assistant"},
-            {"role":"user","content":f"Answer the question based on the context below. If the question can't be answered based on the context, say \"I don't know\"\nBeside answering the question, reply with one of the most related key sentence or keyword in the context and reply in the format: \n {{'answer':\"The answer of the question', 'keywords':'The keywords on which your answer is based most'}} \nContext: {context}\n\n---\n\nQuestion: {question}\n"}
+            {"role":"user","content":f"Answer the question based on the context below. If the question can't be answered based on the context, say \"I don't know\"\nBeside answering the question, reply with the most related key sentence or the most related keyword in the context and reply in the format: \n {{'answer':\"The answer of the question', 'keywords':'The keywords on which your answer is based most'}} \nContext: {context}\n\n---\n\nQuestion: {question}\n"}
         ]
         # print(messages)
         # Create a completions using the question and context
