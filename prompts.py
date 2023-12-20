@@ -1,3 +1,4 @@
+import json
 # 用于创建assistant
 suggestion_guide = """
 The Draw.io Guide, designed to assist users with draw.io, emphasizes direct, practical assistance without directing users to external documentation. 
@@ -20,9 +21,33 @@ Now answer the question about the page below:
 URL of the page: {url}
 
 Question: {question}
+
+Your answer should be in a json format heading and tailing with ``` like this:
+```
+{{
+    "answer": "Your answer",
+    "basis": ["The basis of your answer", "Better be a sentence", "Or a keyword"]
+}}
+```
 """
 
 suggestion_template = """
 url: {url}
 Provide two probable and specific questions which users are most likely to ask about this page.
+
+Your answer should be in a json format heading and tailing with ``` like this:
+```
+{{
+    "questions": ["question1", "question2"]
+}}
+```
 """
+
+def extract_answer(content):
+    try:
+        answer = content.split('```')[1]
+        answer = json.loads(answer)
+        return answer
+    except Exception as e:
+        print(e)
+        return "error: {e}"

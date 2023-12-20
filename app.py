@@ -24,6 +24,7 @@ def web_qa():
     #     crawl(url)
     # df = pd.read_pickle(f'processed/{domain}_embed.pkl')
     answer = answer_question(model="gpt-4", prompt=prompts.qa_template.format(question=question, url=url), instruction=prompts.qa_guide)
+    answer = prompts.extract_answer(answer)
     return flask.jsonify(answer)
 
 @app.route('/suggestion', methods=['GET'])
@@ -38,6 +39,7 @@ def suggestion():
     #     crawl(url)
     # df = pd.read_pickle(f'processed/{domain}_embed.pkl')
     answer = answer_question(model="gpt-4", prompt=prompts.suggestion_template.format(url=url), instruction=prompts.suggestion_guide)
+    answer = prompts.extract_answer(answer)
     return flask.jsonify(answer)
 
 app.run(port=8000)

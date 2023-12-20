@@ -30,7 +30,19 @@ c --> e
 
 ## API Reference
 
-| PATH        | METHOD | PARAMS                                                                                                             | HEADER | BODY | NOTE |
-| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------ | ------ | ---- | ---- |
-| /web_qa     | GET    | question(str): question to ask about the site<br />url(str): url of the site to ask, https://baidu.com for example | --     | --   | --   |
-| /suggestion | GET    | url(str): url of the site to ask, https://baidu.com for example                                                   | --     | --   | --   |
+| PATH        | METHOD | PARAMS                                                       | HEADER | BODY | RESPONSE                                                     | NOTE |
+| ----------- | ------ | ------------------------------------------------------------ | ------ | ---- | ------------------------------------------------------------ | ---- |
+| /web_qa     | GET    | question(str): question to ask about the site<br />url(str): url of the site to ask, https://baidu.com for example | --     | --   | {<br />    "answer":"",<br />    "basis":["keyword", "or sentence"]<br />} | --   |
+| /suggestion | GET    | url(str): url of the site to ask, https://baidu.com for example | --     | --   | {<br />    "questions":["question1","question2"]<br />}      | --   |
+
+{
+
+"answer": "Baidu.com is a Chinese search engine for websites, audio files, and images.",
+
+"basis": [
+
+"Baidu offers several services, including a Chinese search engine for websites, audio files, and images"
+
+    ]
+
+}
