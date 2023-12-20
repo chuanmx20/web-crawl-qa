@@ -33,9 +33,10 @@ def create_context(question, df, max_len=1800):
     return "\n\n###\n\n".join(returns)
 
 def answer_question(
-    df,
+    # df,
     model="gpt-4",
-    question="",
+    prompt="",
+    instruction="",
     max_len=1800,
     debug=False,
     max_tokens=512,
@@ -44,20 +45,16 @@ def answer_question(
     """
     Answer a question based on the most similar context from the dataframe texts
     """
-    context = create_context(
-        question,
-        df,
-        max_len=max_len,
-    )
-    # If debug, print the raw model response
-    if debug:
-        print("Context:\n" + context)
-        print("\n\n")
+    # context = create_context(
+    #     prompt,
+    #     df,
+    #     max_len=max_len,
+    # )
 
     try:
         messages = [
-            {"role":"system","content":"You are a helpful assistant"},
-            {"role":"user","content":f"Answer the question based on the context below. If the question can't be answered based on the context, say \"I don't know\"\nBeside answering the question, reply with the most related key sentence or the most related keyword in the context and reply in the format: \n {{'answer':\"The answer of the question', 'keywords':'The keywords on which your answer is based most'}} \nContext: {context}\n\n---\n\nQuestion: {question}\n"}
+            {"role":"system","content":instruction},
+            {"role":"user","content": prompt}
         ]
         # print(messages)
         # Create a completions using the question and context
@@ -71,3 +68,5 @@ def answer_question(
     except Exception as e:
         print(e)
         return f"error: {e}"
+    
+    

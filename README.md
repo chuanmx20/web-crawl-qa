@@ -30,7 +30,7 @@ c --> e
 
 ## API Reference
 
-| PATH        | PARAMS                                                                                                             | HEADER | BODY | NOTE |
-| ----------- | ------------------------------------------------------------------------------------------------------------------ | ------ | ---- | ---- |
-| /web_qa     | question(str): question to ask about the site<br />url(str): url of the site to ask, https://baidu.com for example | --     | --   | --   |
-| /suggestion |                                                                                                                    |        |      |      |
+| PATH        | METHOD | PARAMS                                                                                                             | HEADER | BODY | NOTE |
+| ----------- | ------ | ------------------------------------------------------------------------------------------------------------------ | ------ | ---- | ---- |
+| /web_qa     | GET    | question(str): question to ask about the site<br />url(str): url of the site to ask, https://baidu.com for example | --     | --   | --   |
+| /suggestion | GET    | url(str): url of the site to ask, https://baidu.com for example                                                   | --     | --   | --   |
