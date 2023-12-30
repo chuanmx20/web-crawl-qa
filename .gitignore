@@ -6,3 +6,4 @@ text/
 processed/
 .DS_Store
 *temp*
+db.sqlite3

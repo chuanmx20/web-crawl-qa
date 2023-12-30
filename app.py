@@ -70,7 +70,7 @@ def suggestion():
 def upload():
     try:
         url = flask.request.args.get('url')
-        html = flask.request.json['html']
+        html = flask.request.form['html']
     except Exception as e:
         return json_response(f"Error: HTML and URL parameters are required. ERROR: {e}")
     if conn.execute(f"SELECT * FROM uploaded_html WHERE url = '{url}'").fetchone() is not None:
