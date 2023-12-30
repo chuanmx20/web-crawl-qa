@@ -71,11 +71,11 @@ def upload():
         url = flask.request.args.get('url')
         html = flask.request.form['html']
     except Exception as e:
-        return json_response(f"Error: HTML and URL parameters are required. ERROR: {e}")
+        return flask.jsonify(f"Error: HTML and URL parameters are required. ERROR: {e}")
     
     conn = sqlite3.connect('db.sqlite3')
     if conn.execute(f"SELECT * FROM uploaded_html WHERE url = '{url}'").fetchone():
-        return json_response({"status": "success"})
+        return flask.jsonify({"status": "success"})
     # upload html to openai
     file_id = assistant.upload_file(html)
     assistant_id = assistant.create_retrieval_assistant(instructions=prompts.assistant_instructions, file_id=file_id)
@@ -83,7 +83,7 @@ def upload():
     conn.execute(f"INSERT INTO uploaded_html (url, file_id, assistant_id) VALUES ('{url}', '{file_id}', '{assistant_id}')")
     conn.commit()
     conn.close()
-    return json_response({"status": "success"})
+    return flask.jsonify({"status": "success"})
 
 @app.route('/assistant_qa', methods=['GET'])
 def assistant_qa():
