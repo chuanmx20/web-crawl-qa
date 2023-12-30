@@ -71,7 +71,7 @@ def upload():
         url = flask.request.args.get('url')
         html = flask.request.form['html']
     except Exception as e:
-        return flask.jsonify(f"Error: HTML and URL parameters are required. ERROR: {e}")
+        return flask.jsonify(f"Error: HTML and URL parameters are required. ERROR: {e}", 400)
     
     conn = sqlite3.connect('db.sqlite3')
     if conn.execute(f"SELECT * FROM uploaded_html WHERE url = '{url}'").fetchone():
