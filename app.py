@@ -15,7 +15,7 @@ def json_response(data):
     # include Access-Control-Allow-Origin: *
     response = flask.jsonify(data)
     response.headers.add("Access-Control-Allow-Origin", "*")
-    return flask.jsonify(data)
+    return response
 
 @app.route('/web_qa', methods=['GET'])
 def web_qa():
