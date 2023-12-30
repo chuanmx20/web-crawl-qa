@@ -27,7 +27,6 @@ if not os.path.exists('db.sqlite3'):
             );''')
     conn.close()
     
-conn = sqlite3.connect('db.sqlite3')
 
 def json_response(data):
     # include Access-Control-Allow-Origin: *
@@ -73,7 +72,9 @@ def upload():
         html = flask.request.form['html']
     except Exception as e:
         return json_response(f"Error: HTML and URL parameters are required. ERROR: {e}")
-    if conn.execute(f"SELECT * FROM uploaded_html WHERE url = '{url}'").fetchone() is not None:
+    
+    conn = sqlite3.connect('db.sqlite3')
+    if conn.execute(f"SELECT * FROM uploaded_html WHERE url = '{url}'").fetchone():
         return json_response({"status": "success"})
     # upload html to openai
     file_id = assistant.upload_file(html)
@@ -81,6 +82,7 @@ def upload():
     # save to database
     conn.execute(f"INSERT INTO uploaded_html (url, file_id, assistant_id) VALUES ('{url}', '{file_id}', '{assistant_id}')")
     conn.commit()
+    conn.close()
     return json_response({"status": "success"})
 
 @app.route('/assistant_qa', methods=['GET'])
@@ -91,10 +93,12 @@ def assistant_qa():
     except Exception as e:
         return json_response(f"Error: URL and question parameters are required. ERROR: {e}")
     # get assistant id
+    conn = sqlite3.connect('db.sqlite3')
     assistant_id = conn.execute(f"SELECT assistant_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
     file_id = conn.execute(f"SELECT file_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
     answer = assistant.create_therad_and_run(prompt=prompts.qa_template.format(question=question, url=url), assistant_id=assistant_id, file_id=file_id)
     answer = prompts.extract_answer(answer)
+    conn.close()
     return json_response(answer)
 
 @app.route('/assistant_suggestion', methods=['GET'])
@@ -104,10 +108,12 @@ def assistant_suggestion():
     except Exception as e:
         return json_response(f"Error: URL and question parameters are required. ERROR: {e}")
     # get assistant id
+    conn = sqlite3.connect('db.sqlite3')
     assistant_id = conn.execute(f"SELECT assistant_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
     file_id = conn.execute(f"SELECT file_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
     answer = assistant.create_therad_and_run(prompt=prompts.suggestion_template.format(url=url), assistant_id=assistant_id, file_id=file_id)
     answer = prompts.extract_answer(answer)
+    conn.close()
     return json_response(answer)
 
 app.run(port=8000)

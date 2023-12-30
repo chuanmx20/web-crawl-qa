@@ -20,7 +20,7 @@ def create_retrieval_assistant(instructions:str, file_id: str):
         tools=[{"type": "retrieval"}],
         file_ids=[file_id]
     )
-    return response['id']
+    return response.id
 
 def upload_file(html: str):
     """upload html to openai
@@ -36,8 +36,8 @@ def upload_file(html: str):
         f.write(html)
         f.seek(0)
         # upload the file
-        response = client.files.create(file=open(f.name, 'rb'), purpose='search')
-        return response['id']
+        response = client.files.create(file=open(f.name, 'rb'), purpose='assistants')
+        return response.id
 
 def create_therad_and_run(prompt, assistant_id, file_id):
     """create a thread and run it
