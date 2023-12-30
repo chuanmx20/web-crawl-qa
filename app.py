@@ -11,6 +11,12 @@ openai.api_key = os.environ['OPENAI_API_KEY']
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
+def json_response(data):
+    # include Access-Control-Allow-Origin: *
+    response = flask.jsonify(data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return flask.jsonify(data)
+
 @app.route('/web_qa', methods=['GET'])
 def web_qa():
     try:
@@ -25,7 +31,7 @@ def web_qa():
     # df = pd.read_pickle(f'processed/{domain}_embed.pkl')
     answer = answer_question(model="gpt-4", prompt=prompts.qa_template.format(question=question, url=url), instruction=prompts.qa_guide)
     answer = prompts.extract_answer(answer)
-    return flask.jsonify(answer)
+    return json_response(answer)
 
 @app.route('/suggestion', methods=['GET'])
 def suggestion():
@@ -40,6 +46,6 @@ def suggestion():
     # df = pd.read_pickle(f'processed/{domain}_embed.pkl')
     answer = answer_question(model="gpt-4", prompt=prompts.suggestion_template.format(url=url), instruction=prompts.suggestion_guide)
     answer = prompts.extract_answer(answer)
-    return flask.jsonify(answer)
+    return json_response(answer)
 
 app.run(port=8000)
