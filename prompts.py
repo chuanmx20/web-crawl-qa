@@ -45,7 +45,9 @@ Your answer should be in a json format heading and tailing with ```json and ``` 
 
 def extract_answer(content):
     try:
+        print(content)
         answer = content.split("```json")[1].split("```")[0]
+        print(answer)
         answer = json.loads(answer)
         return answer
     except Exception as e:
