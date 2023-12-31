@@ -28,10 +28,10 @@ if not os.path.exists('db.sqlite3'):
     conn.close()
     
 
-def json_response(data):
+def json_response(data, origin="*"):
     # include Access-Control-Allow-Origin: *
     response = flask.jsonify(data)
-    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Origin", origin)
     response.headers.add("Access-Control-Allow-Credentials", "true")
     return response
 
@@ -76,7 +76,7 @@ def upload():
     
     conn = sqlite3.connect('db.sqlite3')
     if conn.execute(f"SELECT * FROM uploaded_html WHERE url = '{url}'").fetchone():
-        return flask.jsonify({"status": "success"})
+        return json_response({"status": "success"})
     # upload html to openai
     file_id = assistant.upload_file(html)
     assistant_id = assistant.create_retrieval_assistant(instructions=prompts.assistant_instructions, file_id=file_id)
@@ -84,7 +84,7 @@ def upload():
     conn.execute(f"INSERT INTO uploaded_html (url, file_id, assistant_id) VALUES ('{url}', '{file_id}', '{assistant_id}')")
     conn.commit()
     conn.close()
-    return flask.jsonify({"status": "success"})
+    return json_response({"status": "success"})
 
 @app.route('/assistant_qa', methods=['GET'])
 def assistant_qa():
