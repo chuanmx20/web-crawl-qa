@@ -110,8 +110,14 @@ def assistant_suggestion():
         return json_response(f"Error: URL and question parameters are required. ERROR: {e}")
     # get assistant id
     conn = sqlite3.connect('db.sqlite3')
-    assistant_id = conn.execute(f"SELECT assistant_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
-    file_id = conn.execute(f"SELECT file_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
+    assistant_id = conn.execute(f"SELECT assistant_id FROM uploaded_html WHERE url = '{url}'")
+    if not assistant_id:
+        return json_response({"status": "error", "message": "URL not found"}, 400)
+    assistant_id = assistant_id.fetchone()[0]
+    file_id = conn.execute(f"SELECT file_id FROM uploaded_html WHERE url = '{url}'")
+    if not file_id:
+        return json_response({"status": "error", "message": "URL not found"}, 400)
+    file_id = file_id.fetchone()[0]
     answer = assistant.create_therad_and_run(prompt=prompts.suggestion_template.format(url=url), assistant_id=assistant_id, file_id=file_id)
     answer = prompts.extract_answer(answer)
     conn.close()
