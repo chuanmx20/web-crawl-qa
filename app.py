@@ -115,8 +115,12 @@ def assistant_suggestion():
         return json_response({"answer": "Please upload the HTML first."})
     assistant_id = search[0]
     file_id = search[1]
-    answer = assistant.create_therad_and_run(prompt=prompts.assistant_suggestion_instructions.format(url=url, instruction=prompts.assistant_suggestion_instructions), assistant_id=assistant_id, file_id=file_id)
+    prompt = prompts.assistant_suggestion_template.format(url=url)
+    print(prompt)
+    answer = assistant.create_therad_and_run(prompt=prompt, assistant_id=assistant_id, file_id=file_id)
+    print(answer)
     answer = prompts.extract_answer(answer)
+    print(answer)
     conn.close()
     return json_response(answer)
 

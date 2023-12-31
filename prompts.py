@@ -35,8 +35,8 @@ suggestion_template = """
 url: {url}
 Provide two probable and specific questions which users are most likely to ask about this page.
 
-Your answer should be in a json format heading and tailing with ``` like this:
-```
+Your answer should be in a json format heading and tailing with ```json and ``` like this:
+```json
 {{
     "questions": ["question1", "question2"]
 }}
@@ -45,7 +45,7 @@ Your answer should be in a json format heading and tailing with ``` like this:
 
 def extract_answer(content):
     try:
-        answer = content.split('```')[1]
+        answer = content.split("```json")[1].split("```")[0]
         answer = json.loads(answer)
         return answer
     except Exception as e:
@@ -67,15 +67,17 @@ The guide also always provides two probable and specific questions which users a
 """
 
 assistant_suggestion_template = """
-{instruction}
+If a html file is uploaded, generate your answer based on the html file, and give some key words relevant with the instructions you will provide for the questions, and sort them by relevance at the end of the answer with heading and tailing of ten '*'. The key words picked from the uploaded html file should be those displayed in the web browser.
+The guide also always provides two probable and specific questions which users are most likely to ask, according to the previous instructions provided by the guide and the user's operations and questions. Common questions from the official which are relevant can also be referred.
+
 The uploaded html file is from the url: {url}
 
 Generate your answer based on the html file, and give some key words relevant with the instructions you will provide for the questions, and sort them by relevance at the end of the answer with heading and tailing of ten '*'. The key words picked from the uploaded html file should be those displayed in the web browser.
 The guide also always provides two probable and specific questions which users are most likely to ask, according to the previous instructions provided by the guide and the user's operations and questions. Common questions from the official which are relevant can also be referred.
 
 
-Your answer should be in a json format heading and tailing with ``` like this:
-```
+Your answer should be in a json format heading and tailing with ```json and ``` like this:
+```json
 {{
     "questions": ["question1", "question2"]
 }}
@@ -88,8 +90,8 @@ This HTML file is from this page: {url}
 
 Question: {question}
 
-Your answer should be in a json format heading and tailing with ``` like this:
-```
+Your answer should be in a json format heading and tailing with ```json and ``` like this:
+```json
 {{
     "answer": "Your answer",
     "basis": ["The basis of your answer", "Better be a sentence", "Or a keyword"]
