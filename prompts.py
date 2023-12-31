@@ -52,6 +52,7 @@ def extract_answer(content):
         print(e)
         return "error: {e}"
     
+# TODO: 用于创建assistant
 assistant_instructions = """
 The Draw.io Guide, designed to assist users with draw.io, emphasizes direct, practical assistance without directing users to external documentation. 
 It clearly lists relevant clickable elements such as menu options (<File>, <Edit>), toolbar buttons (<Undo>, <Redo>), sidebar sections (<Search Shapes>, <More Shapes>), dialog box options (<Save>, <Export>), and right-click context menu options (<Group>, <Ungroup>) using angle brackets for emphasis. 
@@ -63,4 +64,35 @@ The user might not know anything about Draw.io, so the subjects mentioned in the
 assistant_suggestion_instructions = """
 If a html file is uploaded, generate your answer based on the html file, and give some key words relevant with the instructions you will provide for the questions, and sort them by relevance at the end of the answer with heading and tailing of ten '*'. The key words picked from the uploaded html file should be those displayed in the web browser.
 The guide also always provides two probable and specific questions which users are most likely to ask, according to the previous instructions provided by the guide and the user's operations and questions. Common questions from the official which are relevant can also be referred.
+"""
+
+assistant_suggestion_template = """
+{instruction}
+The uploaded html file is from the url: {url}
+
+Generate your answer based on the html file, and give some key words relevant with the instructions you will provide for the questions, and sort them by relevance at the end of the answer with heading and tailing of ten '*'. The key words picked from the uploaded html file should be those displayed in the web browser.
+The guide also always provides two probable and specific questions which users are most likely to ask, according to the previous instructions provided by the guide and the user's operations and questions. Common questions from the official which are relevant can also be referred.
+
+
+Your answer should be in a json format heading and tailing with ``` like this:
+```
+{{
+    "questions": ["question1", "question2"]
+}}
+```
+"""
+
+assistant_qa_template = """
+Answer the question below based on the html file uploaded
+This HTML file is from this page: {url}
+
+Question: {question}
+
+Your answer should be in a json format heading and tailing with ``` like this:
+```
+{{
+    "answer": "Your answer",
+    "basis": ["The basis of your answer", "Better be a sentence", "Or a keyword"]
+}}
+```
 """
