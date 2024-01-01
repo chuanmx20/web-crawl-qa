@@ -81,20 +81,20 @@ Your answer should be in a json format heading and tailing with ```json and ``` 
 ```
 """
 
-assistant_qa_template = """
-Answer the question below based on the html file uploaded
-This HTML file is from this page: {url}
+# assistant_qa_template = """
+# Answer the question below based on the html file uploaded
+# This HTML file is from this page: {url}
 
-Question: {question}
+# Question: {question}
 
-Your answer should be in a json format heading and tailing with ```json and ``` like this:
-```json
-{{
-    "answer": "Your answer",
-    "basis": ["The basis of your answer", "Better be a sentence", "Or a keyword"]
-}}
-```
-"""
+# Your answer should be in a json format heading and tailing with ```json and ``` like this:
+# ```json
+# {{
+#     "answer": "Your answer",
+#     "basis": ["The basis of your answer", "Better be a sentence", "Or a keyword"]
+# }}
+# ```
+# """
 
 assistant_qa_template = """
 {guide}
@@ -111,5 +111,5 @@ Your answer should be in a json format heading and tailing with ```json and ``` 
 ```
 """
 assistant_qa_guide = """
-Here I uploaded a HTML file. Help me play with this html page by tell me how to operate on it to solve the problem below. Beside answering the question, you should also provide some keywords in the file your answer based on, three keywords at most.
+Here I uploaded a HTML file. Help me analyze this html page and tell me how to operate on it to solve the problem below. Beside answering the question, you should also provide some keywords from the html file which your answer based on, three keywords at most. By clicking the keywords you provided, the position of the keywords in the file should be tracked easily.
 """
