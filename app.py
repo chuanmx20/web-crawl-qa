@@ -67,6 +67,17 @@ def suggestion():
     answer = prompts.extract_answer(answer)
     return json_response(answer)
 
+def get_ids_from_db(url):
+    conn = sqlite3.connect('db.sqlite3')
+    search = conn.execute(f"SELECT assistant_id, file_id FROM uploaded_html WHERE url = '{url}'").fetchone()
+    conn.close()
+    if not search:
+        return False
+    assistant_id = search[0]
+    file_id = search[1]
+    
+    return assistant_id, file_id
+
 @app.route('/upload', methods=['POST'])
 def upload():
     try:
@@ -87,16 +98,6 @@ def upload():
     conn.close()
     return json_response({"status": "success"})
 
-def get_ids_from_db(url):
-    conn = sqlite3.connect('db.sqlite3')
-    search = conn.execute(f"SELECT assistant_id, file_id FROM uploaded_html WHERE url = '{url}'").fetchone()
-    conn.close()
-    if not search:
-        return False
-    assistant_id = search[0]
-    file_id = search[1]
-    
-    return assistant_id, file_id
 
 @app.route('/assistant_qa', methods=['GET'])
 def assistant_qa():
