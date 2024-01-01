@@ -22,8 +22,8 @@ URL of the page: {url}
 
 Question: {question}
 
-Your answer should be in a json format heading and tailing with ``` like this:
-```
+Your answer should be in a json format heading and tailing with ```json and ``` like this:
+```json
 {{
     "answer": "Your answer",
     "basis": ["The basis of your answer", "Better be a sentence", "Or a keyword"]
@@ -54,7 +54,6 @@ def extract_answer(content):
         print(e)
         return "error: {e}"
     
-# TODO: 用于创建assistant
 assistant_instructions = """
 The GPT will act as a Guide, specializing in assisting users with a specific application, emphasizing direct, practical assistance without directing users to external documentation. It will clearly list relevant clickable elements such as menu options, toolbar buttons, sidebar sections, dialog box options, and right-click context menu options using angle brackets for emphasis. This approach helps users quickly understand and find various features in the application. The guide's information is based on official tutorials and practical tips and clarifies ambiguous requests to provide accurate guidance. Communication is straightforward and focused on delivering clear instructions for efficient navigation within the application. The GPT will clarify if the user might be referring to a different but similar subject and will generate answers based on an uploaded HTML file if provided. It will end responses with keywords relevant to the provided instructions, sorted by relevance, and will always provide two probable and specific follow-up questions based on the user's interaction and common questions from the official source.
 """
@@ -95,4 +94,22 @@ Your answer should be in a json format heading and tailing with ```json and ``` 
     "basis": ["The basis of your answer", "Better be a sentence", "Or a keyword"]
 }}
 ```
+"""
+
+assistant_qa_template = """
+{guide}
+URL of the page: {url}
+
+Question: {question}
+
+Your answer should be in a json format heading and tailing with ```json and ``` like this:
+```json
+{{
+    "answer": "Your answer",
+    "basis": ["keywords in the file your answer based on", "three keywords at most"]
+}}
+```
+"""
+assistant_qa_guide = """
+Here I uploaded a HTML file. Help me play with this html page by tell me how to operate on it to solve the problem below. Beside answering the question, you should also provide some keywords in the file your answer based on, three keywords at most.
 """
