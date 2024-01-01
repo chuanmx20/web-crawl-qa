@@ -95,8 +95,11 @@ def assistant_qa():
         return json_response(f"Error: URL and question parameters are required. ERROR: {e}")
     # get assistant id
     conn = sqlite3.connect('db.sqlite3')
-    assistant_id = conn.execute(f"SELECT assistant_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
-    file_id = conn.execute(f"SELECT file_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
+    search = conn.execute(f"SELECT assistant_id, file_id FROM uploaded_html WHERE url = '{url}'").fetchone()
+    if not search:
+        return json_response({"answer": "Please upload the HTML first."})
+    assistant_id = search[0]
+    file_id = search[1]
     prompt = prompts.assistant_qa_template.format(question=question, url=url, guide=prompts.assistant_qa_guide)
     answer = assistant.create_therad_and_run(prompt=prompt, assistant_id=assistant_id, file_id=file_id)
     answer = prompts.extract_answer(answer)
