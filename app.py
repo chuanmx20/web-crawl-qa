@@ -8,6 +8,7 @@ import pandas as pd
 import openai
 import prompts
 import sqlite3
+import time
 openai.api_key = os.environ['OPENAI_API_KEY']
 
 app = flask.Flask(__name__)
@@ -86,6 +87,17 @@ def upload():
     conn.close()
     return json_response({"status": "success"})
 
+def get_ids_from_db(url):
+    conn = sqlite3.connect('db.sqlite3')
+    search = conn.execute(f"SELECT assistant_id, file_id FROM uploaded_html WHERE url = '{url}'").fetchone()
+    conn.close()
+    if not search:
+        return False
+    assistant_id = search[0]
+    file_id = search[1]
+    
+    return assistant_id, file_id
+
 @app.route('/assistant_qa', methods=['GET'])
 def assistant_qa():
     try:
@@ -93,17 +105,25 @@ def assistant_qa():
         question = flask.request.args.get('question')
     except Exception as e:
         return json_response(f"Error: URL and question parameters are required. ERROR: {e}")
-    # get assistant id
-    conn = sqlite3.connect('db.sqlite3')
-    search = conn.execute(f"SELECT assistant_id, file_id FROM uploaded_html WHERE url = '{url}'").fetchone()
-    if not search:
-        return json_response({"answer": "Please upload the HTML first."})
-    assistant_id = search[0]
-    file_id = search[1]
+
     prompt = prompts.assistant_qa_template.format(question=question, url=url, guide=prompts.assistant_qa_guide)
-    answer = assistant.create_therad_and_run(prompt=prompt, assistant_id=assistant_id, file_id=file_id)
-    answer = prompts.extract_answer(answer)
-    conn.close()
+    
+    flag = False
+    while not flag:
+        # get assistant id and file id
+        ids = get_ids_from_db(url)
+        if not ids:
+            time.sleep(1)
+            continue
+        assistant_id, file_id = ids
+        
+        # inference
+        answer = assistant.create_therad_and_run(prompt=prompt, assistant_id=assistant_id, file_id=file_id)
+        answer = prompts.extract_answer(answer)
+        if answer:
+            flag = True
+            break
+
     return json_response(answer)
 
 @app.route('/assistant_suggestion', methods=['GET'])
@@ -112,17 +132,23 @@ def assistant_suggestion():
         url = flask.request.args.get('url')
     except Exception as e:
         return json_response(f"Error: URL and question parameters are required. ERROR: {e}")
-    # get assistant id
-    conn = sqlite3.connect('db.sqlite3')
-    search = conn.execute(f"SELECT assistant_id, file_id FROM uploaded_html WHERE url = '{url}'").fetchone()
-    if not search:
-        return json_response({"answer": "Please upload the HTML first."})
-    assistant_id = search[0]
-    file_id = search[1]
+    
     prompt = prompts.assistant_suggestion_template.format(url=url)
-    answer = assistant.create_therad_and_run(prompt=prompt, assistant_id=assistant_id, file_id=file_id)
-    answer = prompts.extract_answer(answer)
-    conn.close()
+    flag = False
+    while not flag:
+        # get assistant id and file id
+        ids = get_ids_from_db(url)
+        if not ids:
+            time.sleep(1)
+            continue
+        assistant_id, file_id = ids
+        
+        # inference
+        answer = assistant.create_therad_and_run(prompt=prompt, assistant_id=assistant_id, file_id=file_id)
+        answer = prompts.extract_answer(answer)
+        if answer:
+            flag = True
+            break
     return json_response(answer)
 
 app.run(port=8000)
