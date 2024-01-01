@@ -97,7 +97,8 @@ def assistant_qa():
     conn = sqlite3.connect('db.sqlite3')
     assistant_id = conn.execute(f"SELECT assistant_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
     file_id = conn.execute(f"SELECT file_id FROM uploaded_html WHERE url = '{url}'").fetchone()[0]
-    answer = assistant.create_therad_and_run(prompt=prompts.qa_template.format(question=question, url=url), assistant_id=assistant_id, file_id=file_id)
+    prompt = prompts.assistant_qa_template.format(question=question, url=url, guide=prompts.assistant_qa_guide)
+    answer = assistant.create_therad_and_run(prompt=prompt, assistant_id=assistant_id, file_id=file_id)
     answer = prompts.extract_answer(answer)
     conn.close()
     return json_response(answer)
