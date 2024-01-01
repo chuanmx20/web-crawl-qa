@@ -101,7 +101,7 @@ Your answer should be in a json format heading and tailing with ```json and ``` 
 ```json
 {{
     "answer": "Your answer",
-    "basis": ["keywords in the file your answer based on", "three keywords at most"]
+    "basis": ["keywords in the file your answer based on", "no more and no less than three keywords "]
 }}
 ```
 """
