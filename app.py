@@ -152,4 +152,4 @@ def assistant_suggestion():
             break
     return json_response(answer)
 
-app.run(port=8080)
+app.run(port=8000)

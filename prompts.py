@@ -106,5 +106,5 @@ Your answer should be in a json format heading and tailing with ```json and ``` 
 ```
 """
 assistant_qa_guide = """
-Here I uploaded a HTML file. Help me analyze this html page and tell me how to operate on it to solve the problem below. Beside answering the question, you should also provide some keywords from the html file which your answer based on, three keywords at most. By clicking the keywords you provided, the position of the keywords in the file should be tracked easily.
+Here I uploaded a HTML file. Help me analyze this html page and tell me how to operate on it to solve the problem below. Beside answering the question, you should also provide some keywords from the html file which your answer based on, three keywords at most. These keywords should be visible text elements from the webpage or the title elements. For instance, if you encounter an element like <a id='example_id' title='example_title' class='example_class' href=' '>Example Button</a >, only consider the visible text 'Example Button' and the title element 'example_title' as keywords. Exclude any attribute values such as 'example_id', 'example_class', or 'example_href'. By clicking the keywords you provided, the position of the keywords in the file should be tracked easily.
 """
